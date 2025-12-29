@@ -74,7 +74,8 @@ canvas {
     🎉 Happy New Year Sania ❤️<br>
     You make my world brighter ✨
 </div>
-<audio id="fireworkSound" src="firework.mp3" preload="auto"></audio>
+<audio id="fireworkSound" src="https://files.catbox.moe/48v4x2?raw=true" preload="auto"></audio>
+
 <script>
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
@@ -84,7 +85,10 @@ window.addEventListener("resize", () => {
     canvas.width = innerWidth;
     canvas.height = innerHeight;
 });
+
 const fireworkSound = document.getElementById("fireworkSound");
+let audioUnlocked = false;
+
 class Firework {
     constructor(text = null) {
         this.x = Math.random() * canvas.width;
@@ -108,10 +112,13 @@ class Firework {
     }
     explode() {
         this.exploded = true;
+        
+        if (audioUnlocked) {
+            fireworkSound.currentTime = 0;
+            fireworkSound.volume = 0.7;
+            fireworkSound.play();
+        }
 
-        const sound = fireworkSound.cloneNode();
-        sound.volume = 0.6;
-        sound.play();
         if (this.text) {
             const spacing = 40;
             const startX = this.x - (this.text.length * spacing) / 2;
@@ -140,6 +147,7 @@ class Firework {
         }
     }
 }
+
 class Particle {
     constructor(x, y, color) {
         this.x = x;
@@ -166,6 +174,7 @@ class Particle {
         ctx.restore();
     }
 }
+
 class TextParticle {
     constructor(x, y, letter, color) {
         this.x = x;
@@ -192,7 +201,9 @@ class TextParticle {
         ctx.restore();
     }
 }
+
 let fireworks = [];
+
 function animate() {
     ctx.fillStyle = "rgba(0,0,0,0.2)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -213,8 +224,16 @@ function animate() {
     });
     requestAnimationFrame(animate);
 }
+
 document.getElementById("startBtn").addEventListener("click", () => {
     document.getElementById("startScreen").style.display = "none";
+
+    fireworkSound.play().then(() => {
+        fireworkSound.pause();
+        fireworkSound.currentTime = 0;
+        audioUnlocked = true;
+    }).catch(e => console.log("Audio autoplay blocked", e));
+
     animate();
 });
 </script>
