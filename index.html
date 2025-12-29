@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Happy New Year Sania ❤️</title>
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    background: black;
+    overflow: hidden;
+    font-family: 'Segoe UI', sans-serif;
+    height: 100%;
+}
+#startScreen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle, #120024, #000);
+    color: white;
+    z-index: 10;
+}
+#startScreen h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #ffccff;
+    text-shadow: 0 0 20px #ff66ff;
+}
+#startBtn {
+    padding: 15px 40px;
+    font-size: 1.3rem;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    background: linear-gradient(45deg, #ff00cc, #3333ff);
+    color: white;
+    box-shadow: 0 0 20px #ff00cc;
+    transition: transform 0.2s;
+}
+#startBtn:hover {
+    transform: scale(1.1);
+}
+#message {
+    position: fixed;
+    bottom: 60px;
+    width: 100%;
+    text-align: center;
+    color: white;
+    font-size: 2.5rem;
+    text-shadow: 0 0 20px gold;
+    opacity: 0;
+    animation: fadeIn 4s forwards 3s;
+}
+@keyframes fadeIn {
+    to { opacity: 1; }
+}
+canvas {
+    position: fixed;
+    inset: 0;
+}
+</style>
+</head>
+<body>
+<div id="startScreen">
+    <h1>Happy New Year My Love ❤️</h1>
+    <button id="startBtn">Click here 🎆</button>
+</div>
+<canvas id="canvas"></canvas>
+<div id="message">
+    🎉 Happy New Year Sania ❤️<br>
+    You make my world brighter ✨
+</div>
+<audio id="fireworkSound" src="firework.mp3" preload="auto"></audio>
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+window.addEventListener("resize", () => {
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+});
+const fireworkSound = document.getElementById("fireworkSound");
+class Firework {
+    constructor(text = null) {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height;
+        this.targetY = Math.random() * canvas.height / 2;
+        this.speed = Math.random() * 3 + 4;
+        this.exploded = false;
+        this.particles = [];
+        this.text = text;
+        this.color = `hsl(${Math.random()*360},100%,60%)`;
+    }
+    update() {
+        if (!this.exploded) {
+            this.y -= this.speed;
+            if (this.y <= this.targetY) {
+                this.explode();
+            }
+        } else {
+            this.particles.forEach(p => p.update());
+        }
+    }
+    explode() {
+        this.exploded = true;
+
+        const sound = fireworkSound.cloneNode();
+        sound.volume = 0.6;
+        sound.play();
+        if (this.text) {
+            const spacing = 40;
+            const startX = this.x - (this.text.length * spacing) / 2;
+            for (let i = 0; i < this.text.length; i++) {
+                this.particles.push(
+                    new TextParticle(
+                        startX + i * spacing,
+                        this.y,
+                        this.text[i],
+                        this.color
+                    )
+                );
+            }
+        } else {
+            for (let i = 0; i < 80; i++) {
+                this.particles.push(new Particle(this.x, this.y, this.color));
+            }
+        }
+    }
+    draw() {
+        if (!this.exploded) {
+            ctx.fillStyle = "white";
+            ctx.fillRect(this.x, this.y, 2, 8);
+        } else {
+            this.particles.forEach(p => p.draw());
+        }
+    }
+}
+class Particle {
+    constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.radius = 2;
+        this.color = color;
+        this.speed = Math.random() * 5 + 2;
+        this.angle = Math.random() * Math.PI * 2;
+        this.gravity = 0.05;
+        this.alpha = 1;
+    }
+    update() {
+        this.x += Math.cos(this.angle) * this.speed;
+        this.y += Math.sin(this.angle) * this.speed + this.gravity;
+        this.alpha -= 0.015;
+    }
+    draw() {
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+}
+class TextParticle {
+    constructor(x, y, letter, color) {
+        this.x = x;
+        this.y = y;
+        this.letter = letter;
+        this.color = color;
+        this.vy = Math.random() * 1 + 1;
+        this.alpha = 1;
+    }
+    update() {
+        this.y += this.vy;
+        this.vy += 0.05;
+        this.alpha -= 0.006;
+    }
+    draw() {
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = this.color;
+        ctx.font = "bold 42px Segoe UI";
+        ctx.textAlign = "center";
+        ctx.shadowColor = this.color;
+        ctx.shadowBlur = 20;
+        ctx.fillText(this.letter, this.x, this.y);
+        ctx.restore();
+    }
+}
+let fireworks = [];
+function animate() {
+    ctx.fillStyle = "rgba(0,0,0,0.2)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    if (Math.random() < 0.04) {
+        if (Math.random() < 0.3) {
+            fireworks.push(new Firework("SANIA"));
+        } else {
+            fireworks.push(new Firework());
+        }
+    }
+    fireworks.forEach((fw, index) => {
+        fw.update();
+        fw.draw();
+        if (fw.exploded && fw.particles.every(p => p.alpha <= 0)) {
+            fireworks.splice(index, 1);
+        }
+    });
+    requestAnimationFrame(animate);
+}
+document.getElementById("startBtn").addEventListener("click", () => {
+    document.getElementById("startScreen").style.display = "none";
+    animate();
+});
+</script>
+
+</body>
+</html>
