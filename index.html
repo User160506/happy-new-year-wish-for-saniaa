@@ -65,15 +65,19 @@ canvas {
 </style>
 </head>
 <body>
+
 <div id="startScreen">
     <h1>Happy New Year My Love ❤️</h1>
     <button id="startBtn">Click here 🎆</button>
 </div>
+
 <canvas id="canvas"></canvas>
+
 <div id="message">
     🎉 Happy New Year Sania ❤️<br>
     You make my world brighter ✨
 </div>
+
 <audio id="fireworkSound" src="https://files.catbox.moe/48v4x2?raw=true" preload="auto"></audio>
 
 <script>
@@ -112,10 +116,9 @@ class Firework {
     }
     explode() {
         this.exploded = true;
-        
+
         if (audioUnlocked) {
             fireworkSound.currentTime = 0;
-            fireworkSound.volume = 0.7;
             fireworkSound.play();
         }
 
@@ -227,13 +230,13 @@ function animate() {
 
 document.getElementById("startBtn").addEventListener("click", () => {
     document.getElementById("startScreen").style.display = "none";
-
+    fireworkSound.volume = 0;
     fireworkSound.play().then(() => {
         fireworkSound.pause();
         fireworkSound.currentTime = 0;
+        fireworkSound.volume = 0.6;
         audioUnlocked = true;
-    }).catch(e => console.log("Audio autoplay blocked", e));
-
+    }).catch(e => console.log("Audio unlock failed", e));
     animate();
 });
 </script>
